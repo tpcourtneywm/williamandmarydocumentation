@@ -1,0 +1,128 @@
+---
+title: "3 Simulations Assignment"
+author: "Thomas Courtney"
+date: "10/2/2020"
+output: word_document
+---
+
+
+##Question 1: Drugs
+
+```{r cars}
+sims = 10000
+years = 10 
+levels = c(30000, 35000, 40000, 45000, 50000, 55000, 60000)
+mean = 50000
+standarddev = 12000
+onetime = 16 
+price = 3.7 
+variable = .2 
+OH = .4
+
+
+
+
+profits = cbind(rep(0, 10000), rep(0, 10000), rep(0, 10000), rep(0, 10000), rep(0, 10000), rep(0, 10000), rep(0, 10000))
+for(i in 1:sims) {
+  demand = rnorm(10, mean, standarddev) 
+  for(j in 7:1){
+    produce = demand
+    produce[produce > levels[j]] = levels[j]
+    revenue = price * sum(produce)
+    cost = variable * sum(produce) + OH * levels[j] * years + onetime * levels[j]
+    profits[i,j] = revenue - cost
+  }
+}
+expectedprofits = c(mean(profits[,1]), mean(profits[,2]), mean(profits[,3]), mean(profits[,4]), mean(profits[,5]), mean(profits[,6]), mean(profits[,7])) 
+expectedprofits 
+
+
+
+     
+```
+
+
+```{r pressure, echo=FALSE}
+maximized = levels[5]
+maxexpected = profits[,5]
+plot(levels,expectedprofits); abline(v = maximized)
+
+
+quantile(maxexpected, c(.05, .95))
+```
+
+##Question 2: Warranty
+
+```{r cars}
+library(plyr)
+alpha <- 2
+beta <- .5
+avrg <- alpha*beta
+std.dv <-sqrt(alpha*beta^2)
+x<-50
+range<- 10000
+totalfailures<-rgamma(range,alpha,rate=1)
+totalcost<-totalfailures*100
+totalcost<-round_any(totalcost,100,f=ceiling)
+totalDevices<-totalcost/100
+mean(totalcost)
+mean(totalfailures)
+mean(totalDevices)
+     
+```
+
+
+```{r pressure, echo=FALSE}
+par(mfrow=c(3,1))
+hist(totalcost); hist(totalfailures); hist(totalDevices);
+par(mfrow=c(1,1))
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r cars}
+sims <- 10000 #number of times it is going to run
+pincomingcustomers <- c(.15, .25, .3, .2, .1) #number of customers that come in percentage
+incomingcustomers <- c(0:4); #potential customers
+chance <- .6 #chance they buy a washer
+buyingchoicemachine <- c(.4, .35, .25) #percentage of buying what type of machine
+diffmachine <- c(5, 4, 3)#different potential machines
+
+sellalltwelve <- rep(0, sims) #how long it will take to sell 12
+for(i in 1:sims){
+  days = 0 # number of days
+  machinesleft = c(5, 5, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3) #what machines are left
+  while(length(machinesleft) > 0){
+    customersim <- sample(x =incomingcustomers, prob = pincomingcustomers, size = 1) #how many customers will come in
+    bought <- rbinom(1, customersim, chance)
+    if(bought == 1){
+      soldmachines <- sample(x = diffmachine, prob = buyingchoicemachine, size = bought, replace = T)
+      sold <- c() #if they can buy their choice machine, it gets added to the vector
+      for(j in soldmachines){
+        if(j %in% machinesleft){
+          sold <- c(sold, j)
+        }
+      }
+      for(b in sold){
+        bought <- match(b, machinesleft)
+        machinesleft <- machinesleft[-bought]
+      }
+    }
+    days = days + 1  
+  }
+  sellalltwelve[i] = days
+}
+     
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+mean(sellalltwelve)
+hist(sellalltwelve)
+```

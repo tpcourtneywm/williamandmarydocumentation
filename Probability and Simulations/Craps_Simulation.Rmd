@@ -1,0 +1,67 @@
+---
+title: 'Assignment 11.15: Game of Craps'
+author: "Thomas Courtney"
+date: "10/4/2020"
+output: pdf_document
+---
+
+Craps is a game found at casino’s around the world. The game’s wild popularity is the ability that everyone is cheering for each other, instead of competing with one another. The rules are rather simple. Don’t roll a 2,3, or 12 on the first roll. If you can, roll a 7 or 11 on the first roll. If neither of these five happen at first, continue to roll until another 7 is rolled.
+
+Let’s simulate 1000 turns of Craps to determine the probability of winning on any given hand.
+
+
+```{r cars}
+games <- NULL
+N<-1000
+counter<-rep(0,N)
+
+
+for (t in 1:N) {
+  comeOut <-sample(1:6,1)+sample(1:6,1)
+  roll<-0
+  if(comeOut %in% c(2,3,12)){
+    result <- 0
+    counter[t]<-1
+    
+    
+  } else if ( comeOut %in% c(7,11)) {
+    result<-1
+    counter[t]<-1
+  }else{
+      counter[t]<-1
+      roll<-0
+      while(!(roll %in% c(7,comeOut))){
+        roll<-sample(1:6,1) + sample(1:6,1)
+        counter[t]<-counter[t]+1
+      
+      if(roll== 7){
+        result <- 0 
+      }
+       
+      else{
+        result<-1
+        
+      }
+       
+        
+     
+    }
+    
+    
+  }
+  games[t]<- result
+  games
+  gtable<-table(games)
+  gtable
+  probtowin<-gtable[1]/N
+  probtowin
+}
+
+
+gtable
+probtowin
+barplot(gtable, ylab="number of results")
+counter
+mean(counter)
+```
+
